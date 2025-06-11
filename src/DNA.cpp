@@ -4,17 +4,24 @@
 #include <cmath>
 
 DNA::DNA(int dias, const std::vector<std::string>& acoesDisponiveis) : dias(dias), rng(std::random_device{}()) {
-    std::uniform_int_distribution<> distrib(0, acoesDisponiveis.size() - 1);
-    for (int i = 0; i < dias * 10; ++i) {
-        genes.push_back(acoesDisponiveis[distrib(rng)]);
+    size_t nAcoes = acoesDisponiveis.size();
+    if (nAcoes > 0) {
+        std::uniform_int_distribution<> distrib(0, nAcoes - 1);
+        for (int i = 0; i < dias * 10; ++i) {
+          genes.push_back(acoesDisponiveis[distrib(rng)]);
+        }
     }
 }
 
-void DNA::calcularFitness(const std::vector<std::vector<std::pair<std::string, double>>>& cotacoes) {
-    double montante = 1000.0;
+void DNA::calcularFitness(
+    const std::vector<std::vector<std::pair<std::string, double>>>& cotacoes,
+    const double montanteInicial,
+    const double numeroPotes
+) {
+    double montante = montanteInicial; // 1000 reais iniciais
 
     for (int d = 0; d < dias; ++d) {
-        double pote = montante / 10.0;
+        double pote = montante / numeroPotes; // Divide o montante igualmente entre os potes (ações; 10)
         double montanteDia = 0.0;
 
         for (int p = 0; p < 10; ++p) {
@@ -43,10 +50,10 @@ void DNA::calcularFitness(const std::vector<std::vector<std::pair<std::string, d
 
 DNA DNA::crossover(const DNA& parceiro) const {
     DNA filho(dias, {});
-    int corte = genes.size() / 2;
+    const size_t corte = genes.size() / 2;
     filho.genes.clear();
 
-    for (int i = 0; i < genes.size(); ++i) {
+    for (size_t i = 0; i < genes.size(); ++i) {
         filho.genes.push_back(i < corte ? genes[i] : parceiro.genes[i]);
     }
 
@@ -54,12 +61,17 @@ DNA DNA::crossover(const DNA& parceiro) const {
 }
 
 void DNA::mutar(double taxaMutacao, const std::vector<std::string>& acoesDisponiveis) {
-    std::uniform_real_distribution<> prob(0.0, 1.0);
-    std::uniform_int_distribution<> novaAcao(0, acoesDisponiveis.size() - 1);
+    std::uniform_real_distribution<> prob(0.0, 1.0);                          // Distribuição uniforme para a probabilidade de mutação
+    std::uniform_int_distribution<> novaAcao(0, acoesDisponiveis.size() - 1); // Distribuição uniforme para escolher uma nova ação
 
-    for (int i = 0; i < genes.size(); ++i) {
+    for (size_t i = 0; i < genes.size(); ++i) {
         if (prob(rng) < taxaMutacao) {
             genes[i] = acoesDisponiveis[novaAcao(rng)];
         }
     }
+}
+
+int DNA::getDias() const
+{
+  return dias;
 }

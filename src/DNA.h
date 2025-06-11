@@ -13,13 +13,19 @@ public:
     std::vector<std::string> genes;
     double fitness = 0.0;
 
-    void calcularFitness(const std::vector<std::vector<std::pair<std::string, double>>>& cotacoes);
+    void calcularFitness(
+      const std::vector<std::vector<std::pair<std::string, double>>>& cotacoes, 
+      const double montanteInicial,
+      const double numeroPotes
+    );
     DNA crossover(const DNA& parceiro) const;
     void mutar(double taxaMutacao, const std::vector<std::string>& acoesDisponiveis);
 
+    int getDias() const;
+
 private:
     int dias;
-    std::mt19937 rng;
+    std::mt19937 rng; // gerador de números aleatórios https://cplusplus.com/reference/random/mt19937/
 };
 
 #endif
