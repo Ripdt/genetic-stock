@@ -5,4 +5,6 @@ Study project that buy and sell stocks using genetic algorithm
 ```
 cmake -S . -B build
 cmake --build build
+cd ./bin
+./genetic-stock
 ```
